@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics;
 
 namespace HelloWorld
@@ -7,50 +8,77 @@ namespace HelloWorld
     {
         static void Main(string[] args)
         {
-            int[] arrayInt = GetRandomIntArray(10);
+            int size = args.Length > 0 ? Int32.Parse(args[0]) : 10;
+
+            var arrayInt = GetRandomIntArray(size);
             PrintArray(arrayInt);
+            Console.WriteLine();
 
             Console.WriteLine("Bubble Sort");
+            var timer = Stopwatch.StartNew();
             PrintArray(BubbleSortArray(arrayInt));
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}");
 
             Console.WriteLine("Cocktail Sort");
+            timer = Stopwatch.StartNew();
             PrintArray(ShakerSortArray(arrayInt));
-            Console.WriteLine();
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}");
 
-            double[] arrayDouble = GetRandomDoubleArray(10);
+            Console.WriteLine("Quick Default Sort");
+            timer = Stopwatch.StartNew();
+            Array.Sort(arrayInt);
+            timer.Stop();
+            PrintArray(arrayInt);
+            Console.WriteLine($"Execution time {timer.Elapsed}\n");
+
+            var arrayDouble = GetRandomDoubleArray(size);
             PrintArray(arrayDouble);
+            Console.WriteLine();
 
             Console.WriteLine("Bubble Sort");
+            timer = Stopwatch.StartNew();
             PrintArray(BubbleSortArray(arrayDouble));
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}");
 
             Console.WriteLine("Cocktail Sort");
+            timer = Stopwatch.StartNew();
             PrintArray(ShakerSortArray(arrayDouble));
-            Console.WriteLine();
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}");
+
+            Console.WriteLine("Quick Default Sort");
+            timer = Stopwatch.StartNew();
+            Array.Sort(arrayDouble);
+            timer.Stop();
+            PrintArray(arrayDouble);
+            Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
             Console.ReadLine();
         }
 
-        static int[] GetRandomIntArray(int size)
+        private static int[] GetRandomIntArray(int size)
         {
-            int[] array = new int[size];
+            var array = new int[size];
             var randGen = new Random();
             for (int i = 0; i < size; i++)
-                array[i] = randGen.Next()%1000 + 1;
+                array[i] = randGen.Next(1000);
             return array;
         }
 
-        static double[] GetRandomDoubleArray(int size)
+        private static double[] GetRandomDoubleArray(int size)
         {
-            double[] array = new double[size];
+            var array = new double[size];
             var randGen = new Random();
             for (int i = 0; i < size; i++)
-                array[i] = randGen.Next() % 1000 + randGen.NextDouble();
+                array[i] = randGen.Next(1000)+ randGen.NextDouble();
             return array;
         }
 
-        static int[] BubbleSortArray(int[] array)
+        private static int[] BubbleSortArray(int[] array)
         {
-            var timer = Stopwatch.StartNew();
             for (int i=0; i<array.Length-1;i++)
             {
                 for (int j=i+1; j<array.Length;j++)
@@ -63,14 +91,11 @@ namespace HelloWorld
                     }
                 }
             }
-            timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
             return array;
         }
 
-        static double[] BubbleSortArray(double[] array)
+        private static double[] BubbleSortArray(double[] array)
         {
-            var timer = Stopwatch.StartNew();
             for (int i = 0; i < array.Length - 1; i++)
             {
                 for (int j = i + 1; j < array.Length; j++)
@@ -83,14 +108,11 @@ namespace HelloWorld
                     }
                 }
             }
-            timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
             return array;
         }
 
-        static int[] ShakerSortArray(int[] array)
+        private static int[] ShakerSortArray(int[] array)
         {
-            var timer = Stopwatch.StartNew();
             int left = 0;
             int right = array.Length-1;
             bool flag = true;
@@ -121,14 +143,11 @@ namespace HelloWorld
                 }
                 left++;
             }
-            timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
             return array;
         }
 
-        static double[] ShakerSortArray(double[] array)
+        private static double[] ShakerSortArray(double[] array)
         {
-            var timer = Stopwatch.StartNew();
             int left = 0;
             int right = array.Length - 1;
             bool flag = true;
@@ -159,25 +178,14 @@ namespace HelloWorld
                 }
                 left++;
             }
-            timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
             return array;
         }
 
-        static void PrintArray(int[] array)
+        private static void PrintArray(IEnumerable array)
         {
             foreach(var number in array)
             {
-                Console.Write($"{number} ");
-            }
-            Console.WriteLine();
-        }
-
-        static void PrintArray(double[] array)
-        {
-            foreach (var number in array)
-            {
-                Console.Write($"{number.ToString("0.00")} ");
+                Console.Write($"{number:0.###} ");
             }
             Console.WriteLine();
         }
