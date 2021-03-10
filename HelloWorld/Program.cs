@@ -1,9 +1,25 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 
 namespace HelloWorld
 {
+    class Product
+    {
+        private static Random randGen = new Random(); // for generating random numbers
+
+        public int qty;
+        public double price;
+
+        public Product()
+        {
+            qty = randGen.Next(1000);
+            price = randGen.Next(1000) + randGen.NextDouble();
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -54,7 +70,28 @@ namespace HelloWorld
             Array.Sort(arrayDouble);
             timer.Stop();
             PrintArray(arrayDouble);
-            Console.WriteLine($"Execution time {timer.Elapsed}\n");
+            Console.WriteLine($"Execution time {timer.Elapsed}\n\n");
+
+            // Class fields sorting
+            Product[] products = new Product[size];
+            for (int i=0;i<size;i++)
+            {
+                products[i] = new Product();
+            }
+
+            Console.WriteLine("Example of Bubble Sort for int field in class");
+            timer = Stopwatch.StartNew();
+            var allQtys = products.Select(product => product.qty).ToArray<int>();
+            PrintArray(BubbleSortArray(allQtys));
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}");
+
+            Console.WriteLine("Example of Shaker Sort for double field in class");
+            timer = Stopwatch.StartNew();
+            var allPrices = products.Select(product => product.price).ToArray<double>();
+            PrintArray(ShakerSortArray(allPrices));
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}");
 
             Console.ReadLine();
         }
