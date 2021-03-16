@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HelloWorld": {
+      "commandName": "Project",
+      "commandLineArgs": "4 10 21 2 84 23 15"
+    }
+  }
+}

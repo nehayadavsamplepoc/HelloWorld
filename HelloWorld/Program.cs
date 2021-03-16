@@ -3,226 +3,54 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using HelloWorld.Models;
 
 namespace HelloWorld
 {
-    class Product
+    public class Program
     {
-        private static Random randGen = new Random(); // for generating random numbers
-
-        public int qty;
-        public double price;
-
-        public Product()
+        private static void Main(string[] args)
         {
-            qty = randGen.Next(1000);
-            price = randGen.Next(1000) + randGen.NextDouble();
-        }
-    }
-
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            int size = args.Length > 0 ? Int32.Parse(args[0]) : 10;
-
-            var arrayInt = GetRandomIntArray(size);
-            PrintArray(arrayInt);
-            Console.WriteLine();
-
-            Console.WriteLine("Bubble Sort");
-            var timer = Stopwatch.StartNew();
-            PrintArray(BubbleSortArray(arrayInt));
-            timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
-
-            Console.WriteLine("Cocktail Sort");
-            timer = Stopwatch.StartNew();
-            PrintArray(ShakerSortArray(arrayInt));
-            timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
-
-            Console.WriteLine("Quick Default Sort");
-            timer = Stopwatch.StartNew();
-            Array.Sort(arrayInt);
-            timer.Stop();
-            PrintArray(arrayInt);
-            Console.WriteLine($"Execution time {timer.Elapsed}\n");
-
-            var arrayDouble = GetRandomDoubleArray(size);
-            PrintArray(arrayDouble);
-            Console.WriteLine();
-
-            Console.WriteLine("Bubble Sort");
-            timer = Stopwatch.StartNew();
-            PrintArray(BubbleSortArray(arrayDouble));
-            timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
-
-            Console.WriteLine("Cocktail Sort");
-            timer = Stopwatch.StartNew();
-            PrintArray(ShakerSortArray(arrayDouble));
-            timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
-
-            Console.WriteLine("Quick Default Sort");
-            timer = Stopwatch.StartNew();
-            Array.Sort(arrayDouble);
-            timer.Stop();
-            PrintArray(arrayDouble);
-            Console.WriteLine($"Execution time {timer.Elapsed}\n\n");
-
-            // Class fields sorting
-            Product[] products = new Product[size];
-            for (int i=0;i<size;i++)
+            if (args.Length == 0)
             {
-                products[i] = new Product();
+                Console.WriteLine("Please enter quantities of products as argument in command line");
+                Console.ReadLine();
+                return;
             }
 
-            Console.WriteLine("Example of Bubble Sort for int field in class");
-            timer = Stopwatch.StartNew();
-            var allQtys = products.Select(product => product.qty).ToArray<int>();
-            PrintArray(BubbleSortArray(allQtys));
-            timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
+            // Class fields sorting
+            var products = new List<Product>();
+            foreach (var qty in args)
+            {
+                products.Add(new Product(int.Parse(qty)));
+            }
 
-            Console.WriteLine("Example of Shaker Sort for double field in class");
-            timer = Stopwatch.StartNew();
-            var allPrices = products.Select(product => product.price).ToArray<double>();
-            PrintArray(ShakerSortArray(allPrices));
+            Console.WriteLine("Example of Bubble Sort for Qty field in class");
+            var timer = Stopwatch.StartNew();
+            PrintArray(Sort.SortProductFields(Sort.TypeOfSort.Bubble,Sort.ProductField.Qty,products));
             timer.Stop();
-            Console.WriteLine($"Execution time {timer.Elapsed}");
+            Console.WriteLine($"Execution time {timer.Elapsed}\n");
+
+            Console.WriteLine("Example of Shaker Sort for Price field in class");
+            timer = Stopwatch.StartNew();
+            PrintArray(Sort.SortProductFields(Sort.TypeOfSort.Shaker, Sort.ProductField.Price, products));
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}\n");
+
+            Console.WriteLine("Example of Quick Sort for Price field in class");
+            timer = Stopwatch.StartNew();
+            PrintArray(Sort.SortProductFields(Sort.TypeOfSort.Default, Sort.ProductField.Price, products));
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
             Console.ReadLine();
         }
 
-        private static int[] GetRandomIntArray(int size)
-        {
-            var array = new int[size];
-            var randGen = new Random();
-            for (int i = 0; i < size; i++)
-                array[i] = randGen.Next(1000);
-            return array;
-        }
-
-        private static double[] GetRandomDoubleArray(int size)
-        {
-            var array = new double[size];
-            var randGen = new Random();
-            for (int i = 0; i < size; i++)
-                array[i] = randGen.Next(1000)+ randGen.NextDouble();
-            return array;
-        }
-
-        private static int[] BubbleSortArray(int[] array)
-        {
-            for (int i=0; i<array.Length-1;i++)
-            {
-                for (int j=i+1; j<array.Length;j++)
-                {
-                    if (array[i]>array[j])
-                    {
-                        int temp = array[j];
-                        array[j] = array[i];
-                        array[i] = temp;
-                    }
-                }
-            }
-            return array;
-        }
-
-        private static double[] BubbleSortArray(double[] array)
-        {
-            for (int i = 0; i < array.Length - 1; i++)
-            {
-                for (int j = i + 1; j < array.Length; j++)
-                {
-                    if (array[i] > array[j])
-                    {
-                        double temp = array[j];
-                        array[j] = array[i];
-                        array[i] = temp;
-                    }
-                }
-            }
-            return array;
-        }
-
-        private static int[] ShakerSortArray(int[] array)
-        {
-            int left = 0;
-            int right = array.Length-1;
-            bool flag = true;
-
-            while ((left<right) && flag)
-            {
-                flag = false;
-                for (int i = left; i< right; i++)
-                {
-                    if (array[i] > array[i+1])
-                    {
-                        int temp = array[i+1];
-                        array[i+1] = array[i];
-                        array[i] = temp;
-                        flag = true;
-                    }
-                }
-                right--;
-                for (int i = right; i>left; i--)
-                {
-                    if (array[i-1] > array[i])
-                    {
-                        int temp = array[i - 1];
-                        array[i - 1] = array[i];
-                        array[i] = temp;
-                        flag = true;
-                    }
-                }
-                left++;
-            }
-            return array;
-        }
-
-        private static double[] ShakerSortArray(double[] array)
-        {
-            int left = 0;
-            int right = array.Length - 1;
-            bool flag = true;
-
-            while ((left < right) && flag)
-            {
-                flag = false;
-                for (int i = left; i < right; i++)
-                {
-                    if (array[i] > array[i + 1])
-                    {
-                        double temp = array[i + 1];
-                        array[i + 1] = array[i];
-                        array[i] = temp;
-                        flag = true;
-                    }
-                }
-                right--;
-                for (int i = right; i > left; i--)
-                {
-                    if (array[i - 1] > array[i])
-                    {
-                        double temp = array[i - 1];
-                        array[i - 1] = array[i];
-                        array[i] = temp;
-                        flag = true;
-                    }
-                }
-                left++;
-            }
-            return array;
-        }
-
         private static void PrintArray(IEnumerable array)
         {
-            foreach(var number in array)
+            foreach (var el in array)
             {
-                Console.Write($"{number:0.###} ");
+                Console.Write($"{el:0.###} ");
             }
             Console.WriteLine();
         }
