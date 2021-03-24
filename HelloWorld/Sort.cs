@@ -3,63 +3,92 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HelloWorld.Models;
+using static HelloWorld.Models.ProductConstants;
 
 namespace HelloWorld
 {
     public static class Sort
     {
-        public enum TypeOfSort
-        {
-            Bubble,
-            Shaker,
-            Default
-        }
-
-        public enum ProductField
-        {
-            Qty,
-            Price
-        }
-
         public static IEnumerable SortProductFields(TypeOfSort type, ProductField field, List<Product> products)
         {
+            if (type.Equals(TypeOfSort.Default))
+            {
+                return SortProductFields(field, products);
+            }
             switch (field)
             {
                 case ProductField.Qty:
-                    var allQty = products.Select(product => product.Qty).ToArray<int>();
+                    var allQty = products.Select(product => product.Qty).ToList<int>();
                     switch (type)
                     {
                         case TypeOfSort.Bubble:
                             return BubbleSortArray(allQty);
                         case TypeOfSort.Shaker:
                             return ShakerSortArray(allQty);
-                        case TypeOfSort.Default:
-                            Array.Sort(allQty);
-                            return allQty;
                     }
                     break;
                 case ProductField.Price:
-                    var allPrices = products.Select(product => product.Price).ToArray<decimal>();
+                    var allPrices = products.Select(product => product.Price).ToList<decimal>();
                     switch (type)
                     {
                         case TypeOfSort.Bubble:
                             return BubbleSortArray(allPrices);
                         case TypeOfSort.Shaker:
                             return ShakerSortArray(allPrices);
-                        case TypeOfSort.Default:
-                            Array.Sort(allPrices);
-                            return allPrices;
                     }
                     break;
             }
             return products;
         }
 
-        private static int[] BubbleSortArray(int[] array)
+        public static IEnumerable SortProductFields(ProductField field, List<Product> products)
         {
-            for (var i = 0; i < array.Length - 1; i++)
+            products.Sort(new ProductComparer(field));
+            switch (field)
             {
-                for (var j = i + 1; j < array.Length; j++)
+                case ProductField.Qty:
+                    return products.Select(product => product.Qty).ToList<int>();
+                case ProductField.Price:
+                    return products.Select(product => product.Price).ToList<decimal>();
+            }
+            return products;
+        }
+
+        public static IEnumerable SortProductFields(ProductField field, List<ProductWithSize> products)
+        {
+            products.Sort(new ProductWithSizeComparer(field));
+            switch (field)
+            {
+                case ProductField.Qty:
+                    return products.Select(product => product.Qty).ToList<int>();
+                case ProductField.Price:
+                    return products.Select(product => product.Price).ToList<decimal>();
+                case ProductField.Size:
+                    return products.Select(product => product.Size).ToList<int>();
+            }
+            return products;
+        }
+
+        public static IEnumerable SortProductFields(ProductField field, List<ProductWithColor> products)
+        {
+            products.Sort(new ProductWithColorComparer(field));
+            switch (field)
+            {
+                case ProductField.Qty:
+                    return products.Select(product => product.Qty).ToList<int>();
+                case ProductField.Price:
+                    return products.Select(product => product.Price).ToList<decimal>();
+                case ProductField.Color:
+                    return products.Select(product => product.Color).ToList<string>();
+            }
+            return products;
+        }
+
+        private static List<int> BubbleSortArray(List<int> array)
+        {
+            for (var i = 0; i < array.Count - 1; i++)
+            {
+                for (var j = i + 1; j < array.Count; j++)
                 {
                     if (array[i] > array[j])
                     {
@@ -72,11 +101,11 @@ namespace HelloWorld
             return array;
         }
 
-        private static decimal[] BubbleSortArray(decimal[] array)
+        private static List<decimal> BubbleSortArray(List<decimal> array)
         {
-            for (var i = 0; i < array.Length - 1; i++)
+            for (var i = 0; i < array.Count - 1; i++)
             {
-                for (var j = i + 1; j < array.Length; j++)
+                for (var j = i + 1; j < array.Count; j++)
                 {
                     if (array[i] > array[j])
                     {
@@ -89,10 +118,10 @@ namespace HelloWorld
             return array;
         }
 
-        private static int[] ShakerSortArray(int[] array)
+        private static List<int> ShakerSortArray(List<int> array)
         {
             var left = 0;
-            var right = array.Length - 1;
+            var right = array.Count - 1;
             var flag = true;
 
             while ((left < right) && flag)
@@ -124,10 +153,10 @@ namespace HelloWorld
             return array;
         }
 
-        private static decimal[] ShakerSortArray(decimal[] array)
+        private static List<decimal> ShakerSortArray(List<decimal> array)
         {
             var left = 0;
-            var right = array.Length - 1;
+            var right = array.Count - 1;
             var flag = true;
 
             while ((left < right) && flag)

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using HelloWorld.Models;
+using static HelloWorld.Models.ProductConstants;
 
 namespace HelloWorld
 {
@@ -25,21 +26,47 @@ namespace HelloWorld
                 products.Add(new Product(int.Parse(qty)));
             }
 
-            Console.WriteLine("Example of Bubble Sort for Qty field in class");
+            Console.WriteLine("Example of Default Sort for Qty field in class");
             var timer = Stopwatch.StartNew();
-            PrintArray(Sort.SortProductFields(Sort.TypeOfSort.Bubble,Sort.ProductField.Qty,products));
+            PrintArray(Sort.SortProductFields(ProductField.Qty,products));
             timer.Stop();
             Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
-            Console.WriteLine("Example of Shaker Sort for Price field in class");
+            // Child class sorting
+            var sizeProducts = new List<ProductWithSize>();
+            foreach (var qty in args)
+            {
+                sizeProducts.Add(new ProductWithSize(int.Parse(qty)));
+            }
+
+            Console.WriteLine("Example of Default Sort for Qty field in child class");
             timer = Stopwatch.StartNew();
-            PrintArray(Sort.SortProductFields(Sort.TypeOfSort.Shaker, Sort.ProductField.Price, products));
+            PrintArray(Sort.SortProductFields(ProductField.Qty, sizeProducts));
             timer.Stop();
             Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
-            Console.WriteLine("Example of Quick Sort for Price field in class");
+            Console.WriteLine("Example of Default Sort for Size field in child class");
             timer = Stopwatch.StartNew();
-            PrintArray(Sort.SortProductFields(Sort.TypeOfSort.Default, Sort.ProductField.Price, products));
+            PrintArray(Sort.SortProductFields(ProductField.Size, sizeProducts));
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}\n");
+
+            // Child class sorting
+            var colorProducts = new List<ProductWithColor>();
+            foreach (var qty in args)
+            {
+                colorProducts.Add(new ProductWithColor(int.Parse(qty)));
+            }
+
+            Console.WriteLine("Example of Default Sort for Qty field in child class");
+            timer = Stopwatch.StartNew();
+            PrintArray(Sort.SortProductFields(ProductField.Price, colorProducts));
+            timer.Stop();
+            Console.WriteLine($"Execution time {timer.Elapsed}\n");
+
+            Console.WriteLine("Example of Default Sort for Color field in child class");
+            timer = Stopwatch.StartNew();
+            PrintArray(Sort.SortProductFields(ProductField.Color, colorProducts));
             timer.Stop();
             Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
