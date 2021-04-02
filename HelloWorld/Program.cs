@@ -28,7 +28,8 @@ namespace HelloWorld
 
             Console.WriteLine("Example of Default Sort for Qty field in class");
             var timer = Stopwatch.StartNew();
-            PrintArray(Sort.SortProductFields(ProductField.Qty,products));
+            Sort.SortProductFields(ProductField.Qty, products);
+            PrintProductFields(ProductField.Qty, products);
             timer.Stop();
             Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
@@ -41,13 +42,15 @@ namespace HelloWorld
 
             Console.WriteLine("Example of Default Sort for Qty field in child class");
             timer = Stopwatch.StartNew();
-            PrintArray(Sort.SortProductFields(ProductField.Qty, sizeProducts));
+            Sort.SortProductFields(ProductField.Qty, sizeProducts);
+            PrintProductFields(ProductField.Qty, sizeProducts);
             timer.Stop();
             Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
             Console.WriteLine("Example of Default Sort for Size field in child class");
             timer = Stopwatch.StartNew();
-            PrintArray(Sort.SortProductFields(ProductField.Size, sizeProducts));
+            Sort.SortProductFields(ProductField.Size, sizeProducts);
+            PrintProductFields(ProductField.Size, sizeProducts);
             timer.Stop();
             Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
@@ -60,24 +63,88 @@ namespace HelloWorld
 
             Console.WriteLine("Example of Default Sort for Qty field in child class");
             timer = Stopwatch.StartNew();
-            PrintArray(Sort.SortProductFields(ProductField.Price, colorProducts));
+            Sort.SortProductFields(ProductField.Price, colorProducts);
+            PrintProductFields(ProductField.Price, colorProducts);
             timer.Stop();
             Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
             Console.WriteLine("Example of Default Sort for Color field in child class");
             timer = Stopwatch.StartNew();
-            PrintArray(Sort.SortProductFields(ProductField.Color, colorProducts));
+            Sort.SortProductFields(ProductField.Color, colorProducts);
+            PrintProductFields(ProductField.Color, colorProducts);
             timer.Stop();
             Console.WriteLine($"Execution time {timer.Elapsed}\n");
 
             Console.ReadLine();
         }
 
-        private static void PrintArray(IEnumerable array)
+        private static void PrintProductFields(ProductField field, List<Product> array)
         {
-            foreach (var el in array)
+            if (field.Equals(ProductField.Qty))
             {
-                Console.Write($"{el:0.###} ");
+                foreach (var el in array)
+                {
+                    Console.Write($"{el.Qty} ");
+                }
+            }
+            else if (field.Equals(ProductField.Price))
+            {
+                foreach (var el in array)
+                {
+                    Console.Write($"{el.Price:0.###} ");
+                }
+            }
+            Console.WriteLine();
+        }
+
+        private static void PrintProductFields(ProductField field, List<ProductWithSize> array)
+        {
+            if (field.Equals(ProductField.Qty))
+            {
+                foreach (var el in array)
+                {
+                    Console.Write($"{el.Qty} ");
+                }
+            }
+            else if (field.Equals(ProductField.Price))
+            {
+                foreach (var el in array)
+                {
+                    Console.Write($"{el.Price:0.###} ");
+                }
+            }
+            else if (field.Equals(ProductField.Size))
+            {
+                foreach (var el in array)
+                {
+                    Console.Write($"{el.Size} ");
+                }
+            }
+            Console.WriteLine();
+        }
+
+        private static void PrintProductFields(ProductField field, List<ProductWithColor> array)
+        {
+            if (field.Equals(ProductField.Qty))
+            {
+                foreach (var el in array)
+                {
+                    Console.Write($"{el.Qty} ");
+                }
+            }
+            else if (field.Equals(ProductField.Price))
+            {
+                foreach (var el in array)
+                {
+                    Console.Write($"{el.Price:0.###} ");
+                }
+            }
+            else if (field.Equals(ProductField.Color))
+            {
+                foreach (var el in array)
+                {
+                    Console.Write($"{el.Color} ");
+                }
             }
             Console.WriteLine();
         }
