@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HelloEntityFramework.Models;
+using HelloEntityFramework.Controller;
 
 namespace HelloEntityFramework
 {
@@ -10,24 +8,75 @@ namespace HelloEntityFramework
     {
         static void Main(string[] args)
         {
-            using (UserContext db = new UserContext())
+            bool exit = false;
+            while (!exit)
             {
-                User user1 = new User { Name = "Tom", Age = 33 };
-                User user2 = new User { Name = "Sam", Age = 26 };
-
-                db.Users.Add(user1);
-                db.Users.Add(user2);
-                db.SaveChanges();
-                Console.WriteLine("Объекты успешно сохранены");
-                
-                var users = db.Users;
-                Console.WriteLine("Список объектов:");
-                foreach (User u in users)
+                Console.WriteLine("Enter: 1 - add product, 2 - remove by name, 3 - update by name, 4 - view all with sort");
+                Console.WriteLine("Enter 0 to exit");
+                string option = Console.ReadLine();
+                switch (option)
                 {
-                    Console.WriteLine("{0}.{1} - {2}", u.Id, u.Name, u.Age);
+                    case "1":
+                        AddProductToDb();
+                        break;
+                    case "2":
+                        RemoveProductFromDb();
+                        break;
+                    case "3":
+                        UpdateProductInDb();
+                        break;
+                    case "4":
+                        ViewProductsInDb();
+                        break;
+                    case "0":
+                    default:
+                        exit = true;
+                        break;
                 }
+                Console.ReadLine();
+                Console.Clear();
             }
-            Console.Read();
+        }
+
+        public static void AddProductToDb()
+        {
+            Console.WriteLine("Enter product name");
+            string productName = Console.ReadLine();
+
+            Console.WriteLine("Enter qty");
+            int qty = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Enter price");
+            decimal price = decimal.Parse(Console.ReadLine());
+
+            ProductController.AddProduct(productName, qty, price);
+        }
+
+        public static void RemoveProductFromDb()
+        {
+            Console.WriteLine("Enter product name");
+            string productName = Console.ReadLine();
+
+            ProductController.RemoveProductByName(productName);
+        }
+
+        public static void UpdateProductInDb()
+        {
+            Console.WriteLine("Enter product name to update");
+            string productName = Console.ReadLine();
+
+            Console.WriteLine("Enter new qty");
+            int qty = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Enter new price");
+            decimal price = decimal.Parse(Console.ReadLine());
+
+            ProductController.UpdateProductByName(productName, qty, price);
+        }
+
+        public static void ViewProductsInDb()
+        {
+            ProductController.ViewProductWithSort();
         }
     }
 }
