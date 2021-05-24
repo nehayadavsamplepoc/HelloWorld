@@ -4,21 +4,94 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ProductModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ProductModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="OrderId" />
+          </Key>
+          <Property Name="OrderId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" />
+          <Property Name="WholesalerId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Product">
           <Key>
             <PropertyRef Name="ProductId" />
           </Key>
           <Property Name="ProductId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ProductName" Type="nvarchar" MaxLength="255" />
-          <Property Name="Qty" Type="int" Nullable="false" />
           <Property Name="Price" Type="money" Nullable="false" />
         </EntityType>
+        <EntityType Name="Shipment">
+          <Key>
+            <PropertyRef Name="ShipmentId" />
+          </Key>
+          <Property Name="ShipmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductId" Type="int" Nullable="false" />
+          <Property Name="Qty" Type="int" Nullable="false" />
+          <Property Name="OrderId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Wholesaler">
+          <Key>
+            <PropertyRef Name="WholesalerId" />
+          </Key>
+          <Property Name="WholesalerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <Association Name="FK_Order_Wholesaler">
+          <End Role="Wholesaler" Type="Self.Wholesaler" Multiplicity="1" />
+          <End Role="Order" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Wholesaler">
+              <PropertyRef Name="WholesalerId" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="WholesalerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Shipment_Order">
+          <End Role="Order" Type="Self.Order" Multiplicity="1" />
+          <End Role="Shipment" Type="Self.Shipment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="Shipment">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Shipment_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="Shipment" Type="Self.Shipment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="Shipment">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="ProductModelStoreContainer">
+          <EntitySet Name="Order" EntityType="Self.Order" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Shipment" EntityType="Self.Shipment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Wholesaler" EntityType="Self.Wholesaler" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Order_Wholesaler" Association="Self.FK_Order_Wholesaler">
+            <End Role="Wholesaler" EntitySet="Wholesaler" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Shipment_Order" Association="Self.FK_Shipment_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="Shipment" EntitySet="Shipment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Shipment_Product" Association="Self.FK_Shipment_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="Shipment" EntitySet="Shipment" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ProductModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -28,12 +101,83 @@
           </Key>
           <Property Name="ProductId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ProductName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Qty" Type="Int32" Nullable="false" />
           <Property Name="Price" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <NavigationProperty Name="Shipments" Relationship="ProductModel.FK_Shipment_Product" FromRole="Product" ToRole="Shipment" />
         </EntityType>
         <EntityContainer Name="ProductsEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Products" EntityType="Self.Product" />
+          <EntitySet Name="Orders" EntityType="ProductModel.Order" />
+          <EntitySet Name="Shipments" EntityType="ProductModel.Shipment" />
+          <AssociationSet Name="FK_Shipment_Product" Association="ProductModel.FK_Shipment_Product">
+            <End Role="Product" EntitySet="Products" />
+            <End Role="Shipment" EntitySet="Shipments" />
+          </AssociationSet>
+          <EntitySet Name="Wholesalers" EntityType="ProductModel.Wholesaler" />
+          <AssociationSet Name="FK_Order_Wholesaler" Association="ProductModel.FK_Order_Wholesaler">
+            <End Role="Wholesaler" EntitySet="Wholesalers" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Shipment_Order" Association="ProductModel.FK_Shipment_Order">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="Shipment" EntitySet="Shipments" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="OrderId" />
+          </Key>
+          <Property Name="OrderId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="WholesalerId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Wholesaler" Relationship="ProductModel.FK_Order_Wholesaler" FromRole="Order" ToRole="Wholesaler" />
+          <NavigationProperty Name="Shipments1" Relationship="ProductModel.FK_Shipment_Order" FromRole="Order" ToRole="Shipment" />
+        </EntityType>
+        <EntityType Name="Shipment">
+          <Key>
+            <PropertyRef Name="ShipmentId" />
+          </Key>
+          <Property Name="ShipmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Qty" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Product" Relationship="ProductModel.FK_Shipment_Product" FromRole="Shipment" ToRole="Product" />
+          <Property Name="OrderId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Order" Relationship="ProductModel.FK_Shipment_Order" FromRole="Shipment" ToRole="Order" />
+        </EntityType>
+        <Association Name="FK_Shipment_Product">
+          <End Type="ProductModel.Product" Role="Product" Multiplicity="1" />
+          <End Type="ProductModel.Shipment" Role="Shipment" Multiplicity="*" />
+        </Association>
+        <EntityType Name="Wholesaler">
+          <Key>
+            <PropertyRef Name="WholesalerId" />
+          </Key>
+          <Property Name="WholesalerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Orders" Relationship="ProductModel.FK_Order_Wholesaler" FromRole="Wholesaler" ToRole="Order" />
+        </EntityType>
+        <Association Name="FK_Order_Wholesaler">
+          <End Type="ProductModel.Wholesaler" Role="Wholesaler" Multiplicity="1" />
+          <End Type="ProductModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Wholesaler">
+              <PropertyRef Name="WholesalerId" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="WholesalerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Shipment_Order">
+          <End Type="ProductModel.Order" Role="Order" Multiplicity="1" />
+          <End Type="ProductModel.Shipment" Role="Shipment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="OrderId" />
+            </Principal>
+            <Dependent Role="Shipment">
+              <PropertyRef Name="OrderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -45,8 +189,41 @@
               <MappingFragment StoreEntitySet="Product">
                 <ScalarProperty Name="ProductId" ColumnName="ProductId" />
                 <ScalarProperty Name="ProductName" ColumnName="ProductName" />
-                <ScalarProperty Name="Qty" ColumnName="Qty" />
                 <ScalarProperty Name="Price" ColumnName="Price" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="ProductModel.Order">
+              <MappingFragment StoreEntitySet="Order">
+                <ScalarProperty Name="WholesalerId" ColumnName="WholesalerId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Shipments">
+            <EntityTypeMapping TypeName="ProductModel.Shipment">
+              <MappingFragment StoreEntitySet="Shipment">
+                <ScalarProperty Name="OrderId" ColumnName="OrderId" />
+                <ScalarProperty Name="Qty" ColumnName="Qty" />
+                <ScalarProperty Name="ShipmentId" ColumnName="ShipmentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="FK_Shipment_Product" TypeName="ProductModel.FK_Shipment_Product" StoreEntitySet="Shipment">
+            <EndProperty Name="Shipment">
+              <ScalarProperty Name="ShipmentId" ColumnName="ShipmentId" />
+            </EndProperty>
+            <EndProperty Name="Product">
+              <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="Wholesalers">
+            <EntityTypeMapping TypeName="ProductModel.Wholesaler">
+              <MappingFragment StoreEntitySet="Wholesaler">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="WholesalerId" ColumnName="WholesalerId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -65,7 +242,7 @@
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
-        <DesignerProperty Name="IncludeForeignKeysInModel" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
         <DesignerProperty Name="UseLegacyProvider" Value="false" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 
-namespace HelloEntityFramework.Controller
+namespace HelloEntityFramework.DataAccess
 {
-    public static class ProductController
+    public static class ProductDataAccess
     {
         public static void AddProduct(Product product)
         {
@@ -22,7 +22,7 @@ namespace HelloEntityFramework.Controller
         {
             using (ProductsEntities db = new ProductsEntities())
             {
-                Product product = new Product { ProductName = productName, Qty = qty, Price = price };
+                Product product = new Product { ProductName = productName, Price = price };
 
                 db.Products.Add(product);
                 db.SaveChanges();
@@ -44,14 +44,13 @@ namespace HelloEntityFramework.Controller
             }
         }
 
-        public static void UpdateProductByName(string productName, int qty, decimal price)
+        public static void UpdateProductByName(string productName, decimal price)
         {
             using (ProductsEntities db = new ProductsEntities())
             {
                 Product product = db.Products.FirstOrDefault(p => p.ProductName == productName);
                 if (product != null)
                 {
-                    product.Qty = qty;
                     product.Price = price;
                     db.Entry(product).State = EntityState.Modified;
                     db.SaveChanges();
@@ -64,11 +63,30 @@ namespace HelloEntityFramework.Controller
         {
             using (ProductsEntities db = new ProductsEntities())
             {
-                var products = from p in db.Products
-                             orderby p.ProductName
-                             select p;
+                var products = db.Products.OrderBy(p => p.ProductName);
                 foreach (var p in products)
-                    Console.WriteLine($"Name: {p.ProductName}. Qty: {p.Qty}, Price: {p.Price}");
+                    Console.WriteLine($"Name: {p.ProductName}. Price: {p.Price}");
+            }
+        }
+
+        public static void PrintProductInfo(string productName)
+        {
+            using (ProductsEntities db = new ProductsEntities())
+            {
+                if (db.Shipments.Where(s => s.Product.ProductName == productName).ToList().Count()==0)
+                {
+                    Console.WriteLine($"Product {productName} is not used in any orders");
+                }
+                else
+                {
+                    Console.WriteLine($"Product {productName} is used in orders:\n");
+
+                    foreach (var shipment in db.Shipments.Where(s => s.Product.ProductName == productName))
+                    {
+                        Console.WriteLine($"Qty {shipment.Qty} in order {shipment.Order.Name}. " +
+                            $"Wholesaler {shipment.Order.Wholesaler.Name}");
+                    }
+                }
             }
         }
     }

@@ -26,5 +26,8 @@ namespace HelloEntityFramework.Models.Product
         }
     
         public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<Shipment> Shipments { get; set; }
+        public virtual DbSet<Wholesaler> Wholesalers { get; set; }
     }
 }

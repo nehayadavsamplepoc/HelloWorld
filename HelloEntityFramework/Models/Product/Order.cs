@@ -12,19 +12,20 @@ namespace HelloEntityFramework.Models.Product
     using System;
     using System.Collections.Generic;
     
-    public partial class Product
+    public partial class Order
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Product()
+        public Order()
         {
-            this.Shipments = new HashSet<Shipment>();
+            this.Shipments1 = new HashSet<Shipment>();
         }
     
-        public int ProductId { get; set; }
-        public string ProductName { get; set; }
-        public decimal Price { get; set; }
+        public int OrderId { get; set; }
+        public string Name { get; set; }
+        public int WholesalerId { get; set; }
     
+        public virtual Wholesaler Wholesaler { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Shipment> Shipments { get; set; }
+        public virtual ICollection<Shipment> Shipments1 { get; set; }
     }
 }
